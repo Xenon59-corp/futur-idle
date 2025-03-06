@@ -25,6 +25,32 @@
             padding: 10px;
             margin-top: 10px;
         }
+
+        /* Cadre évolutif en bas à gauche */
+        #developpement {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            width: 300px;
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background-color: #444;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        #progressFill {
+            height: 100%;
+            background-color: #00ff00;
+            width: 0%;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -44,27 +70,30 @@
             <p>Population: <span id="population">0</span></p>
             <p>Génération par seconde: <span id="generation">0</span></p>
 
-            <!-- Menus déroulants -->
+            <!-- Menu pour Collecte -->
             <div class="menu">
-                <h4>Actions</h4>
-                <select onchange="collecter()">
-                    <option value="collecter">🔨 Collecter</option>
-                    <option value="ameliorer">⚡ Améliorer (+1/sec)</option>
-                </select>
+                <h4>🔨 Collecter</h4>
+                <button onclick="collecter()">Collecter</button>
             </div>
 
-            <!-- Installations -->
+            <!-- Menu pour Améliorations -->
             <div class="menu">
-                <h4>Installations Génératrices</h4>
-                <button onclick="acheterGenerateur()">🏭 Acheter Générateur - Coût: <span id="coutGenerateur">50</span></button>
+                <h4>⚡ Amélioration</h4>
+                <button onclick="ameliorer()">Améliorer (+1/sec) - Coût: <span id="cout">10</span></button>
+            </div>
+
+            <!-- Menu pour Population -->
+            <div class="menu">
+                <h4>👨‍👩‍👧‍👦 Population</h4>
+                <button onclick="augmenterPopulation()">Augmenter Population - Coût: <span id="coutPopulation">100</span></button>
+            </div>
+
+            <!-- Menu pour Générateur -->
+            <div class="menu">
+                <h4>🏭 Générateur</h4>
+                <button onclick="acheterGenerateur()">Acheter Générateur - Coût: <span id="coutGenerateur">50</span></button>
                 <p>Générateurs: <span id="generateurs">0</span></p>
                 <p>Génération par générateur: <span id="genParGenerateur">0</span></p>
-            </div>
-
-            <!-- Population -->
-            <div class="menu">
-                <h4>Population</h4>
-                <button onclick="augmenterPopulation()">👨‍👩‍👧‍👦 Augmenter Population - Coût: <span id="coutPopulation">100</span></button>
             </div>
         </div>
 
@@ -72,6 +101,15 @@
         <div class="right-panel">
             <button onclick="sauvegarderFichier()">💾 Sauvegarder</button>
             <input type="file" id="fileInput" onchange="chargerFichier(event)">
+        </div>
+    </div>
+
+    <!-- Cadre évolutif en bas gauche -->
+    <div id="developpement">
+        <h4>📊 Développement en Direct</h4>
+        <p>Progrès : <span id="progressText">0%</span></p>
+        <div id="progressBar">
+            <div id="progressFill"></div>
         </div>
     </div>
 
@@ -84,6 +122,7 @@
         let generateurs = 0;
         let coutGenerateur = 50;
         let generationParGenerateur = 0;
+        let progression = 0;
 
         function majAffichage() {
             document.getElementById("ressources").textContent = ressources;
@@ -94,10 +133,13 @@
             document.getElementById("generateurs").textContent = generateurs;
             document.getElementById("genParGenerateur").textContent = generationParGenerateur;
             document.getElementById("coutPopulation").textContent = coutPopulation;
+            document.getElementById("progressText").textContent = progression + "%";
+            document.getElementById("progressFill").style.width = progression + "%";
         }
 
         function collecter() {
             ressources += 1;
+            progression = Math.min(progression + 1, 100); // Augmente jusqu'à 100%
             majAffichage();
         }
 
@@ -106,6 +148,7 @@
                 ressources -= coutAmelioration;
                 generationParSeconde += 1;
                 coutAmelioration = Math.floor(coutAmelioration * 1.5);
+                progression = Math.min(progression + 2, 100); // Augmente plus vite pour l'amélioration
                 majAffichage();
             }
         }
@@ -116,6 +159,7 @@
                 generateurs += 1;
                 generationParGenerateur += 5;
                 coutGenerateur = Math.floor(coutGenerateur * 1.5);
+                progression = Math.min(progression + 3, 100); // Augmentation plus rapide
                 majAffichage();
             }
         }
@@ -126,6 +170,7 @@
                 population += 10;
                 generationParSeconde += 2;
                 coutPopulation = Math.floor(coutPopulation * 1.5);
+                progression = Math.min(progression + 4, 100); // Augmentation rapide
                 majAffichage();
             }
         }
@@ -144,7 +189,8 @@
                 coutPopulation,
                 generateurs,
                 coutGenerateur,
-                generationParGenerateur
+                generationParGenerateur,
+                progression
             };
             const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
             const a = document.createElement("a");
@@ -168,6 +214,7 @@
                 generateurs = data.generateurs || 0;
                 coutGenerateur = data.coutGenerateur || 50;
                 generationParGenerateur = data.generationParGenerateur || 0;
+                progression = data.progression || 0;
                 majAffichage();
             };
             reader.readAsText(file);
