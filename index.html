@@ -13,10 +13,22 @@
 <body>
     <div class="container">
         <h1>🌍 Idle Colonisation Spatiale 🚀</h1>
-        <p>Ressources: <span id="ressources">0</span></p>
+        <p>Ressources (Minéraux): <span id="ressources">0</span></p>
+        <p>Population: <span id="population">0</span></p>
+        <p>Génération par seconde: <span id="generation">0</span></p>
+        
         <button onclick="collecter()">🔨 Collecter</button>
         <button onclick="ameliorer()">⚡ Améliorer (+1/sec) - Coût: <span id="cout">10</span></button>
-        <br>
+        
+        <h3>Installations Génératrices</h3>
+        <button onclick="acheterGenerateur()">🏭 Acheter Générateur - Coût: <span id="coutGenerateur">50</span></button>
+        <p>Générateurs: <span id="generateurs">0</span></p>
+        <p>Génération par générateur: <span id="genParGenerateur">0</span></p>
+
+        <h3>Population</h3>
+        <button onclick="augmenterPopulation()">👨‍👩‍👧‍👦 Augmenter Population - Coût: <span id="coutPopulation">100</span></button>
+
+        <br><br>
         <button onclick="sauvegarderFichier()">💾 Sauvegarder</button>
         <input type="file" id="fileInput" onchange="chargerFichier(event)">
     </div>
@@ -25,10 +37,21 @@
         let ressources = 0;
         let generationParSeconde = 0;
         let coutAmelioration = 10;
+        let population = 0;
+        let coutPopulation = 100;
+        let generateurs = 0;
+        let coutGenerateur = 50;
+        let generationParGenerateur = 0;
 
         function majAffichage() {
             document.getElementById("ressources").textContent = ressources;
             document.getElementById("cout").textContent = coutAmelioration;
+            document.getElementById("population").textContent = population;
+            document.getElementById("generation").textContent = generationParSeconde;
+            document.getElementById("coutGenerateur").textContent = coutGenerateur;
+            document.getElementById("generateurs").textContent = generateurs;
+            document.getElementById("genParGenerateur").textContent = generationParGenerateur;
+            document.getElementById("coutPopulation").textContent = coutPopulation;
         }
 
         function collecter() {
@@ -45,8 +68,28 @@
             }
         }
 
+        function acheterGenerateur() {
+            if (ressources >= coutGenerateur) {
+                ressources -= coutGenerateur;
+                generateurs += 1;
+                generationParGenerateur += 5;  // Chaque générateur produit 5 minéraux par seconde
+                coutGenerateur = Math.floor(coutGenerateur * 1.5); // Augmente le prix du générateur
+                majAffichage();
+            }
+        }
+
+        function augmenterPopulation() {
+            if (ressources >= coutPopulation) {
+                ressources -= coutPopulation;
+                population += 10; // Chaque amélioration augmente la population de 10
+                generationParSeconde += 2;  // La population génère 2 minéraux par seconde
+                coutPopulation = Math.floor(coutPopulation * 1.5); // Augmente le coût de l'augmentation de population
+                majAffichage();
+            }
+        }
+
         setInterval(() => {
-            ressources += generationParSeconde;
+            ressources += generationParSeconde + (generateurs * generationParGenerateur);
             majAffichage();
         }, 1000);
 
@@ -54,7 +97,12 @@
             const data = {
                 ressources,
                 generationParSeconde,
-                coutAmelioration
+                coutAmelioration,
+                population,
+                coutPopulation,
+                generateurs,
+                coutGenerateur,
+                generationParGenerateur
             };
             const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
             const a = document.createElement("a");
@@ -73,6 +121,11 @@
                 ressources = data.ressources || 0;
                 generationParSeconde = data.generationParSeconde || 0;
                 coutAmelioration = data.coutAmelioration || 10;
+                population = data.population || 0;
+                coutPopulation = data.coutPopulation || 100;
+                generateurs = data.generateurs || 0;
+                coutGenerateur = data.coutGenerateur || 50;
+                generationParGenerateur = data.generationParGenerateur || 0;
                 majAffichage();
             };
             reader.readAsText(file);
