@@ -16,12 +16,15 @@
         <p>Ressources: <span id="ressources">0</span></p>
         <button onclick="collecter()">🔨 Collecter</button>
         <button onclick="ameliorer()">⚡ Améliorer (+1/sec) - Coût: <span id="cout">10</span></button>
+        <br>
+        <button onclick="sauvegarderFichier()">💾 Sauvegarder</button>
+        <input type="file" id="fileInput" onchange="chargerFichier(event)">
     </div>
     
     <script>
-        let ressources = parseInt(localStorage.getItem("ressources")) || 0;
-        let generationParSeconde = parseInt(localStorage.getItem("generation")) || 0;
-        let coutAmelioration = parseInt(localStorage.getItem("cout")) || 10;
+        let ressources = 0;
+        let generationParSeconde = 0;
+        let coutAmelioration = 10;
 
         function majAffichage() {
             document.getElementById("ressources").textContent = ressources;
@@ -31,7 +34,6 @@
         function collecter() {
             ressources += 1;
             majAffichage();
-            sauvegarder();
         }
 
         function ameliorer() {
@@ -40,21 +42,41 @@
                 generationParSeconde += 1;
                 coutAmelioration = Math.floor(coutAmelioration * 1.5);
                 majAffichage();
-                sauvegarder();
             }
-        }
-
-        function sauvegarder() {
-            localStorage.setItem("ressources", ressources);
-            localStorage.setItem("generation", generationParSeconde);
-            localStorage.setItem("cout", coutAmelioration);
         }
 
         setInterval(() => {
             ressources += generationParSeconde;
             majAffichage();
-            sauvegarder();
         }, 1000);
+
+        function sauvegarderFichier() {
+            const data = {
+                ressources,
+                generationParSeconde,
+                coutAmelioration
+            };
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "sauvegarde.json";
+            a.click();
+        }
+
+        function chargerFichier(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = JSON.parse(e.target.result);
+                ressources = data.ressources || 0;
+                generationParSeconde = data.generationParSeconde || 0;
+                coutAmelioration = data.coutAmelioration || 10;
+                majAffichage();
+            };
+            reader.readAsText(file);
+        }
 
         majAffichage();
     </script>
