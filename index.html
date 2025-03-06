@@ -124,6 +124,9 @@
         let generationParGenerateur = 0;
         let progression = 0;
 
+        // Limite de progression pour chaque action
+        const MAX_PROGRESS = 1000;
+
         function majAffichage() {
             document.getElementById("ressources").textContent = ressources;
             document.getElementById("cout").textContent = coutAmelioration;
@@ -134,12 +137,12 @@
             document.getElementById("genParGenerateur").textContent = generationParGenerateur;
             document.getElementById("coutPopulation").textContent = coutPopulation;
             document.getElementById("progressText").textContent = progression + "%";
-            document.getElementById("progressFill").style.width = progression + "%";
+            document.getElementById("progressFill").style.width = (progression / MAX_PROGRESS) * 100 + "%";
         }
 
         function collecter() {
             ressources += 1;
-            progression = Math.min(progression + 1, 100); // Augmente jusqu'à 100%
+            progression = Math.min(progression + 1, MAX_PROGRESS); // Limiter la progression à MAX_PROGRESS
             majAffichage();
         }
 
@@ -148,7 +151,7 @@
                 ressources -= coutAmelioration;
                 generationParSeconde += 1;
                 coutAmelioration = Math.floor(coutAmelioration * 1.5);
-                progression = Math.min(progression + 2, 100); // Augmente plus vite pour l'amélioration
+                progression = Math.min(progression + 5, MAX_PROGRESS); // Limite la progression par amélioration
                 majAffichage();
             }
         }
@@ -159,7 +162,7 @@
                 generateurs += 1;
                 generationParGenerateur += 5;
                 coutGenerateur = Math.floor(coutGenerateur * 1.5);
-                progression = Math.min(progression + 3, 100); // Augmentation plus rapide
+                progression = Math.min(progression + 3, MAX_PROGRESS); // Limite la progression par générateur
                 majAffichage();
             }
         }
@@ -170,7 +173,7 @@
                 population += 10;
                 generationParSeconde += 2;
                 coutPopulation = Math.floor(coutPopulation * 1.5);
-                progression = Math.min(progression + 4, 100); // Augmentation rapide
+                progression = Math.min(progression + 4, MAX_PROGRESS); // Limite la progression par population
                 majAffichage();
             }
         }
