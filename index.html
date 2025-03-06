@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Colonisation Spatiale</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #1a1a2e; color: white; }
+        .container { margin-top: 50px; }
+        button { padding: 10px; margin: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Idle Colonisation Spatiale 🚀</h1>
+        <p>Ressources: <span id="ressources">0</span></p>
+        <button onclick="collecter()">🔨 Collecter</button>
+        <button onclick="ameliorer()">⚡ Améliorer (+1/sec) - Coût: <span id="cout">10</span></button>
+    </div>
+    
+    <script>
+        let ressources = parseInt(localStorage.getItem("ressources")) || 0;
+        let generationParSeconde = parseInt(localStorage.getItem("generation")) || 0;
+        let coutAmelioration = parseInt(localStorage.getItem("cout")) || 10;
+
+        function majAffichage() {
+            document.getElementById("ressources").textContent = ressources;
+            document.getElementById("cout").textContent = coutAmelioration;
+        }
+
+        function collecter() {
+            ressources += 1;
+            majAffichage();
+            sauvegarder();
+        }
+
+        function ameliorer() {
+            if (ressources >= coutAmelioration) {
+                ressources -= coutAmelioration;
+                generationParSeconde += 1;
+                coutAmelioration = Math.floor(coutAmelioration * 1.5);
+                majAffichage();
+                sauvegarder();
+            }
+        }
+
+        function sauvegarder() {
+            localStorage.setItem("ressources", ressources);
+            localStorage.setItem("generation", generationParSeconde);
+            localStorage.setItem("cout", coutAmelioration);
+        }
+
+        setInterval(() => {
+            ressources += generationParSeconde;
+            majAffichage();
+            sauvegarder();
+        }, 1000);
+
+        majAffichage();
+    </script>
+</body>
+</html>
