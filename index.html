@@ -5,34 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Idle Colonisation Spatiale</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #1a1a2e; color: white; }
-        .container { margin-top: 50px; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #1a1a2e; color: white; margin: 0; }
+        .container { margin-top: 50px; display: flex; justify-content: center; align-items: flex-start; }
+        .left-panel, .right-panel { width: 25%; padding: 20px; }
+        .right-panel { text-align: right; }
+        .menu { margin: 20px 0; }
         button { padding: 10px; margin: 10px; cursor: pointer; }
+        h3, h4 { margin-top: 20px; }
+
+        #patchNotes {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        select {
+            padding: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌍 Idle Colonisation Spatiale 🚀</h1>
-        <p>Ressources (Minéraux): <span id="ressources">0</span></p>
-        <p>Population: <span id="population">0</span></p>
-        <p>Génération par seconde: <span id="generation">0</span></p>
-        
-        <button onclick="collecter()">🔨 Collecter</button>
-        <button onclick="ameliorer()">⚡ Améliorer (+1/sec) - Coût: <span id="cout">10</span></button>
-        
-        <h3>Installations Génératrices</h3>
-        <button onclick="acheterGenerateur()">🏭 Acheter Générateur - Coût: <span id="coutGenerateur">50</span></button>
-        <p>Générateurs: <span id="generateurs">0</span></p>
-        <p>Génération par générateur: <span id="genParGenerateur">0</span></p>
+        <!-- Left Panel: Patch Notes -->
+        <div class="left-panel">
+            <h3>📝 Patch Notes</h3>
+            <div id="patchNotes">
+                <p>Aucune modification pour le moment. Ajoutez ici les changements effectués.</p>
+            </div>
+        </div>
 
-        <h3>Population</h3>
-        <button onclick="augmenterPopulation()">👨‍👩‍👧‍👦 Augmenter Population - Coût: <span id="coutPopulation">100</span></button>
+        <!-- Center Panel: Main Game Area -->
+        <div class="center-panel">
+            <h1>🌍 Idle Colonisation Spatiale 🚀</h1>
+            <p>Ressources (Minéraux): <span id="ressources">0</span></p>
+            <p>Population: <span id="population">0</span></p>
+            <p>Génération par seconde: <span id="generation">0</span></p>
 
-        <br><br>
-        <button onclick="sauvegarderFichier()">💾 Sauvegarder</button>
-        <input type="file" id="fileInput" onchange="chargerFichier(event)">
+            <!-- Menus déroulants -->
+            <div class="menu">
+                <h4>Actions</h4>
+                <select onchange="collecter()">
+                    <option value="collecter">🔨 Collecter</option>
+                    <option value="ameliorer">⚡ Améliorer (+1/sec)</option>
+                </select>
+            </div>
+
+            <!-- Installations -->
+            <div class="menu">
+                <h4>Installations Génératrices</h4>
+                <button onclick="acheterGenerateur()">🏭 Acheter Générateur - Coût: <span id="coutGenerateur">50</span></button>
+                <p>Générateurs: <span id="generateurs">0</span></p>
+                <p>Génération par générateur: <span id="genParGenerateur">0</span></p>
+            </div>
+
+            <!-- Population -->
+            <div class="menu">
+                <h4>Population</h4>
+                <button onclick="augmenterPopulation()">👨‍👩‍👧‍👦 Augmenter Population - Coût: <span id="coutPopulation">100</span></button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Save Menu -->
+        <div class="right-panel">
+            <button onclick="sauvegarderFichier()">💾 Sauvegarder</button>
+            <input type="file" id="fileInput" onchange="chargerFichier(event)">
+        </div>
     </div>
-    
+
     <script>
         let ressources = 0;
         let generationParSeconde = 0;
@@ -72,8 +114,8 @@
             if (ressources >= coutGenerateur) {
                 ressources -= coutGenerateur;
                 generateurs += 1;
-                generationParGenerateur += 5;  // Chaque générateur produit 5 minéraux par seconde
-                coutGenerateur = Math.floor(coutGenerateur * 1.5); // Augmente le prix du générateur
+                generationParGenerateur += 5;
+                coutGenerateur = Math.floor(coutGenerateur * 1.5);
                 majAffichage();
             }
         }
@@ -81,9 +123,9 @@
         function augmenterPopulation() {
             if (ressources >= coutPopulation) {
                 ressources -= coutPopulation;
-                population += 10; // Chaque amélioration augmente la population de 10
-                generationParSeconde += 2;  // La population génère 2 minéraux par seconde
-                coutPopulation = Math.floor(coutPopulation * 1.5); // Augmente le coût de l'augmentation de population
+                population += 10;
+                generationParSeconde += 2;
+                coutPopulation = Math.floor(coutPopulation * 1.5);
                 majAffichage();
             }
         }
@@ -114,7 +156,7 @@
         function chargerFichier(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 const data = JSON.parse(e.target.result);
